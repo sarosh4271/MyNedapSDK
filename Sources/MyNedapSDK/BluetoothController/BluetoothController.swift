@@ -16,8 +16,8 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
     @Published var devicesFound : [CBPeripheral] = []
 
     var device : CBPeripheral!
-    var masterKey : String
-    var uidaKey : String
+    var masterKey : String = ""
+    var uidaKey : String = ""
         
     private var centralManager: CBCentralManager!
     private var aesEncryption : AESEncryption!
@@ -25,25 +25,6 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
     private var charRepWriteTx : CBCharacteristic?
     private var charRepNotifyRx : CBCharacteristic?
     private var charRepWriteID : CBCharacteristic?
-    
-    public init(loglist: Array<String>, devicesFound: [CBPeripheral], centralManager: CBCentralManager!, device: CBPeripheral!, isBluetoothOn: Bool, charRepWriteTx: CBCharacteristic? = nil, charRepNotifyRx: CBCharacteristic? = nil, charRepWriteID: CBCharacteristic? = nil, masterKey:String, uidaKey:String) {
-        self.loglist = loglist
-        self.devicesFound = devicesFound
-        self.centralManager = centralManager
-        self.device = device
-        self.isBluetoothOn = isBluetoothOn
-        self.charRepWriteTx = charRepWriteTx
-        self.charRepNotifyRx = charRepNotifyRx
-        self.charRepWriteID = charRepWriteID
-        self.masterKey = masterKey
-        self.uidaKey = uidaKey
-        
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
