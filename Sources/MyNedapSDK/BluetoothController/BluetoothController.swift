@@ -12,13 +12,13 @@ import SwiftUI
 @available(iOS 13.0, *)
 public final class BleViewController: UIViewController, ObservableObject,CBCentralManagerDelegate,CBPeripheralDelegate {
     
-    @Published var loglist : Array<String> = []
-    @Published var devicesFound : [CBPeripheral] = []
+    @Published public var loglist : Array<String> = []
+    @Published public var devicesFound : [CBPeripheral] = []
 
-    var device : CBPeripheral!
     var masterKey : String = ""
     var uidaKey : String = ""
-        
+
+    private var device : CBPeripheral!
     private var centralManager: CBCentralManager!
     private var aesEncryption : AESEncryption!
     private var isBluetoothOn : Bool = false
@@ -90,7 +90,7 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
         masterKey = master_key
         uidaKey = uida_key
         aesEncryption = AESEncryption(masterKey: masterKey, uidaKey: uidaKey)
-
+        device = dev
         print("Starting to connect")
         loglist.append("starting to connect")
         centralManager.connect(dev)
