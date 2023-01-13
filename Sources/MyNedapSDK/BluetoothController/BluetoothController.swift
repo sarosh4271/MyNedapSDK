@@ -26,6 +26,14 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
     private var charRepNotifyRx : CBCharacteristic?
     private var charRepWriteID : CBCharacteristic?
     
+    public init () {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         centralManager = CBCentralManager(delegate: self, queue: nil)
