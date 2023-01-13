@@ -29,7 +29,6 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
     public override func viewDidLoad() {
         super.viewDidLoad()
         centralManager = CBCentralManager(delegate: self, queue: nil)
-        aesEncryption = AESEncryption(masterKey: masterKey, uidaKey: uidaKey)
     }
 
     public func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -67,19 +66,23 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
         loglist.append("Connected successfully to \(peripheral.name ?? "")")
     }
     
-    func stopScanning (){
+    public func stopScanning (){
         centralManager.stopScan()
     }
     
-    func startScanning () {
+    public func startScanning () {
         if isBluetoothOn {
             devicesFound = []
             centralManager.scanForPeripherals(withServices: [])
         }
     }
     
-    func connectToDevice(dev:CBPeripheral){
+    public func connectToDevice(dev:CBPeripheral,master_key:String,uida_key:String){
         loglist = []
+        masterKey = master_key
+        uidaKey = uida_key
+        aesEncryption = AESEncryption(masterKey: masterKey, uidaKey: uidaKey)
+
         print("Starting to connect")
         loglist.append("starting to connect")
         centralManager.connect(dev)
