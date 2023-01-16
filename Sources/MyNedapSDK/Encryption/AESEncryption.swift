@@ -52,7 +52,8 @@ public final class AESEncryption {
         var padding = ""
             padding = "8000000000000000000000"
             padding = "80000000000000000000000000000000"
-            padding = "80000000000000000000000000000000000000000000"
+//            padding = "80000000000000000000000000000000000000000000"
+        
         let d = m + padding
         let dLast16 = String(d[32...63])
         let dFirst16 = String(d[...31])
@@ -65,9 +66,15 @@ public final class AESEncryption {
         
         let keyaBinary = dkAes.toHexString().hexaToBinary
         let keya = String(binToHex(keyaBinary)[32...])
-        print("keya::: \(keya)")
+        let keya64 = String(binToHex(keyaBinary))
+        
+        print("keya::: \(keya64)") // EC0846CED40303072EEB86E45F7B5D641F9EF724B450FFD232E7EB0FBBF820A6
         print("key1::: \(k1Hex)")
         print("key2::: \(k2Hex)")
+        print("d:::::: \(d)") // 01570000001A00000000000002026073 80000000000000000000000000000000000000000000
+        // 01570000001A00000000000002026073 80000000000000000000000000000000
+        print("dk12::: \(dk12)")
+        
         return keya
     }
     

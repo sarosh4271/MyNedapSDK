@@ -117,6 +117,22 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
             }
         }
     }
+    
+    func writeToDescriptor (descriptor:CBDescriptor, peripheral:CBPeripheral) {
+        let dataValue = Data([0])
+        _ = CBCharacteristicWriteType.withResponse
+        print("datavalue \(dataValue)")
+        loglist.append("Writing to descriptor: [0]")
+        if descriptor.characteristic?.properties.contains(.write) == true {
+            do {
+                try peripheral.writeValue(dataValue, for: descriptor)
+            } catch let exception {
+                // An exception occurred while writing the value.
+                print("Exception while value to descriptor: \(exception)")
+                loglist.append("error while writing value to descriptor: \(exception)")
+            }
+        }
+    }
 
     public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
         if let error = error {
@@ -158,6 +174,17 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
         let st = String(decoding: value,as: UTF8.self)
         loglist.append("writing following value: \(st)")
         peripheral.writeValue(value, for: char ,type: .withResponse)
+    }
+    
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverDescriptorsFor characteristic: CBCharacteristic, error: Error?) {
+
+        guard let descList = characteristic.descriptors else {return}
+        if descList.count > 0 {
+            guard let desc = descList.first else {return}
+            desc.characteristic?.service?.peripheral?.setNotifyValue(true, for: desc.characteristic!)
+            writeToDescriptor(descriptor: desc, peripheral: peripheral)
+//            print("descriptor discover ,,, \(desc.uuid.uuidString) ,,, \(desc.value)")
+        }
     }
     
     public func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
