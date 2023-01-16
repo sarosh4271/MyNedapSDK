@@ -11,7 +11,7 @@ import CryptoSwift
 public final class AESEncryption {
     var masterKey:String // from user as input
     var uidaKey:String // from user as input
-    let constZero: Array<UInt8> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] // ivzero length = 16
+    let constZero: Array<UInt8> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,7] // ivzero length = 16
     
     public init(masterKey: String, uidaKey: String) {
         self.masterKey = masterKey
