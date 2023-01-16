@@ -84,7 +84,7 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
         }
     }
     
-    public func connectToDevice(dev:CBPeripheral,master_key:String,uida_key:String){
+    public func connectAndAuthenticate(dev:CBPeripheral,master_key:String,uida_key:String){
         loglist = []
         masterKey = master_key
         uidaKey = uida_key
