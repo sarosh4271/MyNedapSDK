@@ -68,8 +68,7 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral)  {
         peripheral.discoverServices(nil)
         peripheral.delegate = self
-        let c = aesEncryption.keyGen()
-        print("Connected to device \(c)")
+        print("Connected to device")
 
         loglist.append("Connected successfully to \(peripheral.name ?? "")")
     }
@@ -184,7 +183,6 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
             guard let desc = descList.first else {return}
             desc.characteristic?.service?.peripheral?.setNotifyValue(true, for: desc.characteristic!)
             writeToDescriptor(descriptor: desc, peripheral: peripheral)
-//            print("descriptor discover ,,, \(desc.uuid.uuidString) ,,, \(desc.value)")
         }
     }
     

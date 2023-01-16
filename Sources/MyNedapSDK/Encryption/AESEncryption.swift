@@ -11,7 +11,9 @@ import CryptoSwift
 public final class AESEncryption {
     var masterKey:String // from user as input
     var uidaKey:String // from user as input
-    let constZero: Array<UInt8> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,7] // ivzero length = 16
+
+    private let const_rb: Array<UInt8> = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x87]
+    private let const_zero: Array<UInt8> = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00]
     
     public init(masterKey: String, uidaKey: String) {
         self.masterKey = masterKey
@@ -20,7 +22,7 @@ public final class AESEncryption {
     
     func keyGen () -> String {
         
-        let l = try! AES(key: masterKey.hexaToBytes, blockMode: CBC(iv:constZero),padding: .noPadding).encrypt(constZero)
+        let l = try! AES(key: masterKey.hexaToBytes, blockMode: CBC(iv:const_zero),padding: .noPadding).encrypt(const_zero)
         var binaryString = l.toHexString().hexaToBinary
         
         if String(binaryString[0]) == "0" {
@@ -32,29 +34,30 @@ public final class AESEncryption {
             binaryString.removeFirst()
         }
 
-//        let constRb2 = BigInteger(constRb,radix: 2)
-
         var k1Binary: String = binaryString
         let k1Hex:String = binToHex(binaryString)
         
-        if String(k1Binary[0]) == "0" {
-            k1Binary = k1Binary + "0"
-            k1Binary.removeFirst()
+        var k2Binary: String = k1Binary
+        
+        if (String(k1Binary[0]) == "0") {
+            var leftShift = k1Binary + "0"
+            leftShift.removeFirst()
+            k2Binary = leftShift
         } else {
-            k1Binary = k1Binary + "0"
-            k1Binary.removeFirst()
+            var leftShift = k1Binary + "0"
+            leftShift.removeFirst()
+            let xor = BigInteger(leftShift,radix: 2)! ^ BigInteger(const_rb.toHexString().hexaToBinary,radix: 2)!
+            k2Binary = String(xor,radix: 2)
         }
         
-        let k2Binary: String = k1Binary
-        let k2Hex:String = binToHex(k1Binary)
+        let k2Hex:String = binToHex(k2Binary)
         
-        let m = "01" + uidaKey
-        var padding = ""
-            padding = "8000000000000000000000"
-            padding = "80000000000000000000000000000000"
-//            padding = "80000000000000000000000000000000000000000000"
+        var m = "01" + uidaKey + "80"
+        while m.count < 64 {
+            m = m + "0"
+        }
         
-        let d = m + padding
+        let d = m
         let dLast16 = String(d[32...63])
         let dFirst16 = String(d[...31])
 
@@ -62,26 +65,26 @@ public final class AESEncryption {
 
         let dk12 = dFirst16 + binToHex(String(xork2,radix: 2))
         
-        let dkAes = try! AES(key: masterKey.hexaToBytes, blockMode: CBC(iv: constZero),padding: .noPadding).encrypt(dk12.hexaToBytes)
+        let dkAes = try! AES(key: masterKey.hexaToBytes, blockMode: CBC(iv: const_zero),padding: .noPadding).encrypt(dk12.hexaToBytes)
         
         let keyaBinary = dkAes.toHexString().hexaToBinary
         let keya = String(binToHex(keyaBinary)[32...])
         let keya64 = String(binToHex(keyaBinary))
         
-        print("keya::: \(keya64)") // EC0846CED40303072EEB86E45F7B5D641F9EF724B450FFD232E7EB0FBBF820A6
+        print("keya::: \(keya64)")
         print("key1::: \(k1Hex)")
         print("key2::: \(k2Hex)")
-        print("d:::::: \(d)") // 01570000001A00000000000002026073 80000000000000000000000000000000000000000000
-        // 01570000001A00000000000002026073 80000000000000000000000000000000
+        print("constzero \(const_rb.toHexString())")
+        print("d:::::: \(d)")
         print("dk12::: \(dk12)")
-        
         return keya
     }
+    
     
     func aes128Operation (rndaRndbAsteric:String, keya:String) -> String  {
         let keyaHex = keya.hexaToBytes // B0A42687AA50A67A6DCEB68EA59A1332
         let rndarndbHex = rndaRndbAsteric.hexaToBytes
-        let k = try! AES(key: keyaHex, blockMode: CBC(iv: constZero),padding: .noPadding).encrypt(rndarndbHex)
+        let k = try! AES(key: keyaHex, blockMode: CBC(iv: const_rb),padding: .noPadding).encrypt(rndarndbHex)
         
         let result = "42" + k.toHexString()
       return result;
