@@ -79,6 +79,7 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
     
     public func startScanning () {
         if isBluetoothOn {
+            print("Scan method start")
             devicesFound = []
             centralManager.scanForPeripherals(withServices: [])
         }
@@ -98,6 +99,7 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         if peripheral.name != nil && !devicesFound.contains(peripheral)
         {
+        print("device found \(peripheral.name ?? "nil")")
             devicesFound.append(peripheral)
         }
     }
