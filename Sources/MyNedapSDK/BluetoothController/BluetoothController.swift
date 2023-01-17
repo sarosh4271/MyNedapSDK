@@ -206,9 +206,16 @@ public final class BleViewController: UIViewController, ObservableObject,CBCentr
                 writeMethod(char: charRepWriteTx!, peripheral: peripheral, value: aesEncryption.getDataFromValue(value: uida))
             }
             if sub == "43" {
+                let auth_result = aesEncryption.decryptOperation(response: characteristicASCIIValue)
                 peripheral.setNotifyValue(false, for: characteristic)
-                loglist.append("3 step completed")
-                print("3 step completed")
+
+                if auth_result {
+                    loglist.append("3 step completed")
+                    print("3 step completed")
+                } else {
+                    loglist.append("3 step failed")
+                    print("3 step failed")
+                }
             }
         }
     }

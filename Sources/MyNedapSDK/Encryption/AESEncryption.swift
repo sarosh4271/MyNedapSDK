@@ -14,6 +14,7 @@ public final class AESEncryption {
 
     private let const_rb: Array<UInt8> = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x87]
     private let const_zero: Array<UInt8> = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00]
+    private var rnda: String = ""
     
     public init(masterKey: String, uidaKey: String) {
         self.masterKey = masterKey
@@ -101,22 +102,51 @@ public final class AESEncryption {
     func writeThird (response:String) -> String {
         let hexArray: Array<String> = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A","B","C","D","E","F"]
         var randomNumbers = [String]()
-        var randomHexString:String = ""
 
         for _ in 1...16 {
             if let randomNumber = hexArray.randomElement() {
                 randomNumbers.append(randomNumber)
-                randomHexString += randomNumber
+                rnda += randomNumber
             }
         }
         
         let keya = keyGen()
         let rndbAsteric = rndbAsteric(value: response)
-        let finalValue = randomHexString + rndbAsteric
+        let finalValue = rnda + rndbAsteric
     
         let uida = aes128Operation(rndaRndbAsteric: finalValue, keya: keya)
         
         return uida
+    }
+    
+    func decryptOperation (response:String) -> Bool {
+        let keya = keyGen()
+        var newResponse = String(response[2...])
+        
+        let l = try! AES(key: keya.hexaToBytes, blockMode: ECB(),padding: .noPadding).decrypt(newResponse.hexaToBytes)
+        
+        var randomRotated:[UInt8] = []
+        for item in l {
+            if randomRotated.count < Int(l.count/2) {
+                randomRotated.append(item)
+            }
+        }
+    
+        let result = rotateLeft(arr: rnda.hexaToBytes)
+        if result == randomRotated {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    private func rotateLeft(arr: [UInt8]) -> [UInt8] {
+        guard arr.count >= 2 else {
+        return arr
+        }
+        let head = [arr[0]]
+        let tail = Array(arr[1..<arr.count])
+        return tail + head
     }
     
     func rndbAsteric(value:String) -> String {
