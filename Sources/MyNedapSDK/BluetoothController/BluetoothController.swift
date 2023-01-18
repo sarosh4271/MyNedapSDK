@@ -10,7 +10,7 @@ import CoreBluetooth
 import SwiftUI
 
 @available(iOS 13.0, *)
-public final class BleViewController: UIViewController, ObservableObject,CBCentralManagerDelegate,CBPeripheralDelegate {
+public class BleViewController: UIViewController, ObservableObject,CBCentralManagerDelegate,CBPeripheralDelegate {
     
     @Published public var loglist : Array<String> = []
     @Published public var devicesFound : [CBPeripheral] = []
