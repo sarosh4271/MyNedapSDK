@@ -13,7 +13,8 @@ import SwiftUI
 public class BleViewController: UIViewController, ObservableObject,CBCentralManagerDelegate,CBPeripheralDelegate {
     
     @Published public var loglist : Array<String> = []
-    @Published public var devicesFound : [String] = []
+    @Published public var devicesFound : [CBPeripheral] = []
+    @Published public var devicesNames : [String] = []
 
     var masterKey : String = ""
     var uidaKey : String = ""
@@ -76,6 +77,8 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     
     public func stopScanning (){
         centralManager.stopScan()
+        devicesFound = []
+        devicesNames = []
         print("stop scan called")
     }
     
@@ -84,6 +87,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         if isBluetoothOn {
             print("Scan method start")
             devicesFound = []
+            devicesNames = []
             centralManager.scanForPeripherals(withServices: [])
         }
     }
@@ -100,11 +104,11 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     }
     
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        print("device found :::;;;;")
-        if peripheral.name != nil && !devicesFound.contains(peripheral.name ?? "")
+        if peripheral.name != nil && !devicesFound.contains(peripheral)
         {
-        print("device found \(peripheral.name ?? "nil")")
-        devicesFound.append(peripheral.name ?? "nil")
+        print("device found ios \(peripheral.name ?? "nil")")
+        devicesFound.append(peripheral)
+        devicesNames.append(peripheral.name ?? "")
         }
     }
     
