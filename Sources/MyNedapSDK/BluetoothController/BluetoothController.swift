@@ -37,6 +37,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     public override func viewDidLoad() {
         super.viewDidLoad()
         centralManager = CBCentralManager(delegate: self, queue: nil)
+        print("view did load method")
     }
 
     public func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -46,7 +47,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
                 print("Bluetooth is powered off")
             case .poweredOn:
                 isBluetoothOn = true
-                print("Bluetooth is on")
+                print("Bluetooth is ons")
             case .unauthorized:
                 isBluetoothOn = false
                 print("Unauthorized for bluetooth")
@@ -75,9 +76,11 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     
     public func stopScanning (){
         centralManager.stopScan()
+        print("stop scan called")
     }
     
     public func startScanning () {
+        print("Scan method init start")
         if isBluetoothOn {
             print("Scan method start")
             devicesFound = []
@@ -97,6 +100,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     }
     
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        print("device found :::;;;;")
         if peripheral.name != nil && !devicesFound.contains(peripheral)
         {
         print("device found \(peripheral.name ?? "nil")")
