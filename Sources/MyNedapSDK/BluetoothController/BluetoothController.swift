@@ -13,7 +13,7 @@ import SwiftUI
 public class BleViewController: UIViewController, ObservableObject,CBCentralManagerDelegate,CBPeripheralDelegate {
     
     @Published public var loglist : Array<String> = []
-    @Published public var devicesFound : [CBPeripheral] = []
+    @Published public var devicesFound : [String] = []
 
     var masterKey : String = ""
     var uidaKey : String = ""
@@ -101,10 +101,10 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         print("device found :::;;;;")
-        if peripheral.name != nil && !devicesFound.contains(peripheral)
+        if peripheral.name != nil && !devicesFound.contains(peripheral.name ?? "")
         {
         print("device found \(peripheral.name ?? "nil")")
-            devicesFound.append(peripheral)
+        devicesFound.append(peripheral.name ?? "nil")
         }
     }
     
