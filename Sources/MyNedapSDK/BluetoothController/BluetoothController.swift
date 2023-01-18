@@ -14,7 +14,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     
     @Published public var loglist : Array<String> = []
     @Published public var devicesFound : [CBPeripheral] = []
-    @Published public var devicesNames : [String] = []
+    @Published public var deviceName : String = ""
 
     var masterKey : String = ""
     var uidaKey : String = ""
@@ -78,7 +78,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     public func stopScanning (){
         centralManager.stopScan()
         devicesFound = []
-        devicesNames = []
         print("stop scan called")
     }
     
@@ -87,7 +86,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         if isBluetoothOn {
             print("Scan method start")
             devicesFound = []
-            devicesNames = []
             centralManager.scanForPeripherals(withServices: [])
         }
     }
@@ -108,7 +106,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         {
         print("device found ios \(peripheral.name ?? "nil")")
         devicesFound.append(peripheral)
-        devicesNames.append(peripheral.name ?? "")
+        deviceName = peripheral.name ?? ""
         }
     }
     
