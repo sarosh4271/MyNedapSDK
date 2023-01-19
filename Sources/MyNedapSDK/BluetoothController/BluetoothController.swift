@@ -97,6 +97,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         aesEncryption = AESEncryption(masterKey: masterKey, uidaKey: uidaKey)
         device = dev
         loglist.append("starting to connect")
+        centralManager.stopScan()
         centralManager.connect(dev)
     }
     
