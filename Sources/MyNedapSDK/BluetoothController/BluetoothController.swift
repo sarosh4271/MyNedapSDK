@@ -14,7 +14,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     
     @Published public var loglist : Array<String> = []
     @Published public var devicesFound : [CBPeripheral] = []
-    @Published public var deviceName : String = ""
+    @Published public var deviceNameMAC : Array<String> = []
 
     var masterKey : String = ""
     var uidaKey : String = ""
@@ -106,7 +106,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         {
         print("device found ios \(peripheral.name ?? "nil")")
         devicesFound.append(peripheral)
-        deviceName = peripheral.name ?? ""
+        deviceNameMAC = [peripheral.name ?? "",peripheral.identifier.uuidString]
         }
     }
     
@@ -115,7 +115,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         loglist.append("disconnected from device")
     }
 
-    
     public func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard let services = peripheral.services else {return}
         for ser in services {
