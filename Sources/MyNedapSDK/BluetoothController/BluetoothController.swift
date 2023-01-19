@@ -16,6 +16,9 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     @Published public var devicesFound : [CBPeripheral] = []
     @Published public var deviceNameMAC : Array<String> = []
     @Published public var isConnected : Bool = false
+    @Published public var isBluetoothOn : Bool = false
+    @Published public var authenticated : Bool = false
+
 
     var masterKey : String = ""
     var uidaKey : String = ""
@@ -23,7 +26,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     private var device : CBPeripheral!
     private var centralManager: CBCentralManager!
     private var aesEncryption : AESEncryption!
-    private var isBluetoothOn : Bool = false
     private var charRepWriteTx : CBCharacteristic?
     private var charRepNotifyRx : CBCharacteristic?
     private var charRepWriteID : CBCharacteristic?
@@ -39,7 +41,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     public override func viewDidLoad() {
         super.viewDidLoad()
         centralManager = CBCentralManager(delegate: self, queue: nil)
-//        print("view did load method")
     }
 
     public func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -71,7 +72,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral)  {
         peripheral.discoverServices(nil)
         peripheral.delegate = self
-//        print("Connected to device")
         isConnected = true
         loglist.append("Connected successfully to \(peripheral.name ?? "")")
     }
@@ -79,12 +79,10 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     public func stopScanning (){
         centralManager.stopScan()
         devicesFound = []
-//        print("stop scan called")
     }
     
     public func startScanning () {
         if isBluetoothOn {
-//            print("Scan method start")
             devicesFound = []
             centralManager.scanForPeripherals(withServices: [])
         }
@@ -92,11 +90,12 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     
     public func connectAndAuthenticate(dev:CBPeripheral,master_key:String,uida_key:String){
         loglist = []
+        authenticated = false
+        isConnected = false
         masterKey = master_key
         uidaKey = uida_key
         aesEncryption = AESEncryption(masterKey: masterKey, uidaKey: uidaKey)
         device = dev
-//        print("Starting to connect")
         loglist.append("starting to connect")
         centralManager.connect(dev)
     }
@@ -110,7 +109,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     }
     
     public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-//        print("Disconnected from device")
         isConnected = false
         loglist.append("disconnected from device")
     }
@@ -127,7 +125,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     func writeToDescriptor (descriptor:CBDescriptor, peripheral:CBPeripheral) {
         let dataValue = Data([0])
         _ = CBCharacteristicWriteType.withResponse
-//        print("datavalue \(dataValue)")
         loglist.append("Writing to descriptor: [0]")
         if descriptor.characteristic?.properties.contains(.write) == true {
 //            do {
@@ -143,16 +140,13 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
 
     public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
         if let error = error {
-//            print("error while writing value to descriptor: \(error)")
             loglist.append("error while writing value to descriptor: \(descriptor.uuid.uuidString) , error \(error)")
         } else {
-//            print("write success! descriptor ", descriptor.uuid.uuidString)
                      loglist.append("write success for descriptor to: \(descriptor.uuid.uuidString)")
         }
     }
     
     public func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
-//        print("notification update state: \(characteristic.isNotifying)")
     }
     
     public func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
@@ -173,7 +167,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         }
         
         peripheral.setNotifyValue(true, for: charRepNotifyRx!)
-//        print("notification is on")
 //        peripheral.discoverDescriptors(for: charRepNotifyRx!)
         writeMethod(char: charRepWriteID!, peripheral: peripheral,value: aesEncryption.getDataFromValue(value: uidaKey))
     }
@@ -203,14 +196,12 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
 
         characteristicASCIIValue = String(ASCIIstring ?? "")
         loglist.append("got response: \((characteristicASCIIValue as String))")
-//        print("got response: \((characteristicASCIIValue as String))")
         
         if characteristicASCIIValue.isEmpty == false {
             let sub = String(characteristicASCIIValue[0...1])
             if sub == "41" {
                 let uida = aesEncryption.writeThird(response: characteristicASCIIValue)
                 
-//                print("uida values: \(uida)")
                 writeMethod(char: charRepWriteTx!, peripheral: peripheral, value: aesEncryption.getDataFromValue(value: uida))
             }
             if sub == "43" {
@@ -219,17 +210,16 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
 
                 if auth_result {
                     loglist.append("3 step completed")
-//                    print("3 step completed")
+                    authenticated = true
                 } else {
                     loglist.append("3 step auth result do not match")
-//                    print("3 step auth result do not match. failed")
+                    authenticated = false
                 }
             }
         }
     }
     
     public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
-//        print("write success to: ", characteristic.uuid.uuidString)
         loglist.append("write success to: \(characteristic.uuid.uuidString)")
     }
 }

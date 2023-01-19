@@ -71,13 +71,7 @@ public final class AESEncryption {
         let keyaBinary = dkAes.toHexString().hexaToBinary
         let keya = String(binToHex(keyaBinary)[32...])
         let keya64 = String(binToHex(keyaBinary))
-        
-//        print("keya::: \(keya64)")
-//        print("key1::: \(k1Hex)")
-//        print("key2::: \(k2Hex)")
-//        print("constzero \(const_rb.toHexString())")
-//        print("d:::::: \(d)")
-//        print("dk12::: \(dk12)")
+
         return keya
     }
     
