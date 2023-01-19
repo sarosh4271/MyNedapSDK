@@ -15,6 +15,8 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     @Published public var loglist : Array<String> = []
     @Published public var devicesFound : [CBPeripheral] = []
     @Published public var deviceNameMAC : Array<String> = []
+    @Published public var isDisconnected : Bool = true
+    @Published public var isConnected : Bool = false
 
     var masterKey : String = ""
     var uidaKey : String = ""
@@ -71,7 +73,8 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         peripheral.discoverServices(nil)
         peripheral.delegate = self
         print("Connected to device")
-
+        isConnected = true
+        isDisconnected = false
         loglist.append("Connected successfully to \(peripheral.name ?? "")")
     }
     
@@ -82,7 +85,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     }
     
     public func startScanning () {
-        print("Scan method init start")
         if isBluetoothOn {
             print("Scan method start")
             devicesFound = []
@@ -104,7 +106,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         if peripheral.name != nil && !devicesFound.contains(peripheral)
         {
-        print("device found ios \(peripheral.name ?? "nil")")
         devicesFound.append(peripheral)
         deviceNameMAC = [peripheral.name ?? "",peripheral.identifier.uuidString]
         }
@@ -112,6 +113,8 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     
     public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("Disconnected from device")
+        isDisconnected = true
+        isConnected = false
         loglist.append("disconnected from device")
     }
 
@@ -220,8 +223,8 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
                     loglist.append("3 step completed")
                     print("3 step completed")
                 } else {
-                    loglist.append("3 step failed")
-                    print("3 step failed")
+                    loglist.append("3 step auth result do not match")
+                    print("3 step auth result do not match. failed")
                 }
             }
         }
