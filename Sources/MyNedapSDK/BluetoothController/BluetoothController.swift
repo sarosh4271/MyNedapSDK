@@ -15,7 +15,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     @Published public var loglist : Array<String> = []
     @Published public var devicesFound : [CBPeripheral] = []
     @Published public var deviceNameMAC : Array<String> = []
-    @Published public var isDisconnected : Bool = true
     @Published public var isConnected : Bool = false
 
     var masterKey : String = ""
@@ -74,7 +73,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         peripheral.delegate = self
         print("Connected to device")
         isConnected = true
-        isDisconnected = false
         loglist.append("Connected successfully to \(peripheral.name ?? "")")
     }
     
@@ -113,7 +111,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     
     public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("Disconnected from device")
-        isDisconnected = true
         isConnected = false
         loglist.append("disconnected from device")
     }
