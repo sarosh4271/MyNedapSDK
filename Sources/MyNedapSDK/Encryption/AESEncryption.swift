@@ -36,7 +36,7 @@ public final class AESEncryption {
         }
 
         var k1Binary: String = binaryString
-        let k1Hex:String = binToHex(binaryString)
+//        let k1Hex:String = binToHex(binaryString)
         
         var k2Binary: String = k1Binary
         
@@ -51,7 +51,7 @@ public final class AESEncryption {
             k2Binary = String(xor,radix: 2)
         }
         
-        let k2Hex:String = binToHex(k2Binary)
+//        let k2Hex:String = binToHex(k2Binary)
         
         var m = "01" + uidaKey + "80"
         while m.count < 64 {
@@ -72,12 +72,12 @@ public final class AESEncryption {
         let keya = String(binToHex(keyaBinary)[32...])
         let keya64 = String(binToHex(keyaBinary))
         
-        print("keya::: \(keya64)")
-        print("key1::: \(k1Hex)")
-        print("key2::: \(k2Hex)")
-        print("constzero \(const_rb.toHexString())")
-        print("d:::::: \(d)")
-        print("dk12::: \(dk12)")
+//        print("keya::: \(keya64)")
+//        print("key1::: \(k1Hex)")
+//        print("key2::: \(k2Hex)")
+//        print("constzero \(const_rb.toHexString())")
+//        print("d:::::: \(d)")
+//        print("dk12::: \(dk12)")
         return keya
     }
     
