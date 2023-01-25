@@ -22,9 +22,13 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
 
     var masterKey : String = ""
     var uidaKey : String = ""
+    private var userDistance : Double = 0
+    private var measuredPower : Int = 3
+    private var nFactor : Int = 1
+    private var devicesDistance : Array<Double> = []
 
     private var device : CBPeripheral!
-    private var centralManager: CBCentralManager!
+    private var centralManager : CBCentralManager!
     private var aesEncryption : AESEncryption!
     private var charRepWriteTx : CBCharacteristic?
     private var charRepNotifyRx : CBCharacteristic?
@@ -81,14 +85,15 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         devicesFound = []
     }
     
-    public func startScanning () {
+    public func startScanning (distance:Double) {
+        userDistance = distance
         if isBluetoothOn {
             devicesFound = []
             centralManager.scanForPeripherals(withServices: [])
         }
     }
     
-    public func connectAndAuthenticate(dev:CBPeripheral,master_key:String,uida_key:String){
+    public func connectAndAuthenticate(dev:CBPeripheral,master_key:String,uida_key:String) {
         loglist = []
         authenticated = false
         isConnected = false
@@ -101,11 +106,44 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         centralManager.connect(dev)
     }
     
+    public func scanConnectAuthenticate (distance:Double,master_key:String,uida_key:String) {
+        loglist = []
+        userDistance = distance
+        authenticated = false
+        isConnected = false
+        masterKey = master_key
+        uidaKey = uida_key
+        aesEncryption = AESEncryption(masterKey: masterKey, uidaKey: uidaKey)
+        print("Starting to connect")
+        loglist.append("starting to connect")
+        centralManager.scanForPeripherals(withServices: [])
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            print("1 seconds passed")
+            self.centralManager.stopScan()
+            self.closestDevice()
+        }
+    }
+    
+    private func closestDevice () {
+        var minDistance = devicesDistance.first ?? 0
+        
+        for i in 0...devicesDistance.count {
+            if devicesDistance[i] <= minDistance {
+                minDistance = devicesDistance[i]
+                device = devicesFound[i]
+            }
+        }
+        centralManager.connect(device)
+    }
+    
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        if peripheral.name != nil && !devicesFound.contains(peripheral)
-        {
-        devicesFound.append(peripheral)
-        deviceNameMAC = [peripheral.name ?? "",peripheral.identifier.uuidString]
+        let disDecimal = pow(10, (measuredPower - Int(truncating: RSSI)) / (10 * nFactor))
+        let disDouble = Double(truncating: NSDecimalNumber(decimal: disDecimal))
+        
+        if peripheral.name != nil && !devicesFound.contains(peripheral) && disDouble < userDistance {
+            devicesFound.append(peripheral)
+            devicesDistance.append(disDouble)
+            deviceNameMAC = [peripheral.name ?? "",peripheral.identifier.uuidString]
         }
     }
     
@@ -124,7 +162,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     }
     
     func writeToDescriptor (descriptor:CBDescriptor, peripheral:CBPeripheral) {
-        let dataValue = Data([0])
+        let dataValue = Data([0x01, 0x00])
         _ = CBCharacteristicWriteType.withResponse
         loglist.append("Writing to descriptor: [0]")
         if descriptor.characteristic?.properties.contains(.write) == true {
