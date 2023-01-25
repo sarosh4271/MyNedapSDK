@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MyNedapSDK'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'A short description of MyNedapSDK.'
   s.homepage         = 'https://github.com/sarosh4271/MyNedapSDK'
   s.license          = { :type => 'MIT', :file => 'LICENSE.md' }
