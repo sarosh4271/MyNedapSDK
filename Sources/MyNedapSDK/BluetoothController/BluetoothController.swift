@@ -24,7 +24,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     var uidaKey : String = ""
     private var userDistance : Double = 0
     private var measuredPower : Int = 3
-    private var nFactor : Int = 1
+    private var nFactor : Int = 4
     private var devicesDistance : Array<Double> = []
 
     private var device : CBPeripheral!
@@ -114,25 +114,30 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         masterKey = master_key
         uidaKey = uida_key
         aesEncryption = AESEncryption(masterKey: masterKey, uidaKey: uidaKey)
-        print("Starting to connect")
-        loglist.append("starting to connect")
+        loglist.append("Scanning for devices")
         centralManager.scanForPeripherals(withServices: [])
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            print("1 seconds passed")
             self.centralManager.stopScan()
-            self.closestDevice()
+            if !self.devicesFound.isEmpty {
+                self.closestDevice()
+            } else {
+                self.loglist.append("No devices found!")
+            }
         }
     }
     
     private func closestDevice () {
         var minDistance = devicesDistance.first ?? 0
-        
-        for i in 0...devicesDistance.count {
-            if devicesDistance[i] <= minDistance {
+        device = devicesFound.first
+
+        for i in 0..<devicesDistance.count {
+            if devicesDistance[i] < minDistance {
                 minDistance = devicesDistance[i]
                 device = devicesFound[i]
             }
         }
+        
+        loglist.append("Starting to connect")
         centralManager.connect(device)
     }
     
