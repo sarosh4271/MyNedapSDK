@@ -144,7 +144,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         let disDouble = pow(10, ((measuredPower - Double(truncating: RSSI)) / (10 * nFactor)))
 
-        if peripheral.name != nil && !devicesFound.contains(peripheral) && disDouble < userDistance {
+        if peripheral.name != nil && !devicesFound.contains(peripheral) && disDouble < (userDistance/100) {
             devicesFound.append(peripheral)
             devicesDistance.append(disDouble)
             deviceNameMAC = [peripheral.name ?? "",peripheral.identifier.uuidString]
