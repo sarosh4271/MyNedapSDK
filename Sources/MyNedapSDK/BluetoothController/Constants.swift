@@ -16,8 +16,8 @@ struct CBUUIDs {
 }
 
 struct CONSTANTS {
-    static let Measured_Power : Double = 3
-    static let N_Factor : Double = 4
+    static let Measured_Power : Double = -70
+    static let N_Factor : Double = 2.4
     static let Master_Key : String = ""
     static let UIDA_Key : String = ""
     static let Scan_Distance_Meters : Double = 1

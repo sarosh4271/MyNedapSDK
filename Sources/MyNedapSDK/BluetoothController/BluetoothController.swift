@@ -71,31 +71,31 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         }
     }
     
-    public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral)  {
+    public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         peripheral.discoverServices(nil)
         peripheral.delegate = self
         isConnected = true
         loglist.append("Connected successfully to \(peripheral.name ?? "")")
     }
     
-    public func stopScanning (){
+    public func stopScanning () {
         centralManager.stopScan()
         devicesFound = []
     }
     
-    public func startScanning (distance:Double) {
-        userDistance = distance
+    public func startScanning () {
+        userDistance = CONSTANTS.Scan_Distance_Meters
         if isBluetoothOn {
             devicesFound = []
             centralManager.scanForPeripherals(withServices: [])
         }
     }
     
-    public func connectAndAuthenticate(dev:CBPeripheral,master_key:String,uida_key:String) {
+    public func connectAndAuthenticate(dev:CBPeripheral,uida_key:String) {
         loglist = []
         authenticated = false
         isConnected = false
-        masterKey = master_key
+        masterKey = CONSTANTS.Master_Key
         uidaKey = uida_key
         aesEncryption = AESEncryption(masterKey: masterKey, uidaKey: uidaKey)
         device = dev
@@ -104,12 +104,12 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         centralManager.connect(dev)
     }
     
-    public func scanConnectAuthenticate (distance:Double,master_key:String,uida_key:String) {
+    public func scanConnectAuthenticate (uida_key:String) {
         loglist = []
-        userDistance = distance
+        userDistance = CONSTANTS.Scan_Distance_Meters
         authenticated = false
         isConnected = false
-        masterKey = master_key
+        masterKey = CONSTANTS.Master_Key
         uidaKey = uida_key
         aesEncryption = AESEncryption(masterKey: masterKey, uidaKey: uidaKey)
         loglist.append("Scanning for devices")
@@ -142,7 +142,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         let disDouble = pow(10, ((CONSTANTS.Measured_Power - Double(truncating: RSSI)) / (10 * CONSTANTS.N_Factor)))
 
-        if peripheral.name != nil && !devicesFound.contains(peripheral) && disDouble < (userDistance/100) {
+        if peripheral.name != nil && !devicesFound.contains(peripheral) && disDouble < userDistance {
             devicesFound.append(peripheral)
             devicesDistance.append(disDouble)
             deviceNameMAC = [peripheral.name ?? "",peripheral.identifier.uuidString]
