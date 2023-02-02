@@ -23,8 +23,6 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     var masterKey : String = ""
     var uidaKey : String = ""
     private var userDistance : Double = 0
-    private var measuredPower : Double = 3
-    private var nFactor : Double = 4
     private var devicesDistance : Array<Double> = []
 
     private var device : CBPeripheral!
@@ -142,7 +140,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
     }
     
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        let disDouble = pow(10, ((measuredPower - Double(truncating: RSSI)) / (10 * nFactor)))
+        let disDouble = pow(10, ((CONSTANTS.Measured_Power - Double(truncating: RSSI)) / (10 * CONSTANTS.N_Factor)))
 
         if peripheral.name != nil && !devicesFound.contains(peripheral) && disDouble < (userDistance/100) {
             devicesFound.append(peripheral)

@@ -14,3 +14,11 @@ struct CBUUIDs {
     static let BLENotifyChar_UUID = CBUUID(string: "540810c2-d573-11e5-ab30-625662870761")
     static let BLEWriteChar_UUID = CBUUID(string: "54080bd6-d573-11e5-ab30-625662870761")
 }
+
+struct CONSTANTS {
+    static let Measured_Power : Double = 3
+    static let N_Factor : Double = 4
+    static let Master_Key : String = ""
+    static let UIDA_Key : String = ""
+    static let Scan_Distance_Meters : Double = 1
+}
