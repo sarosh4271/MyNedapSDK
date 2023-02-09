@@ -208,7 +208,7 @@ public class BleViewController: UIViewController, ObservableObject,CBCentralMana
         }
         
         peripheral.setNotifyValue(true, for: charRepNotifyRx!)
-//        peripheral.discoverDescriptors(for: charRepNotifyRx!)
+        peripheral.discoverDescriptors(for: charRepNotifyRx!)
         writeMethod(char: charRepWriteID!, peripheral: peripheral,value: aesEncryption.getDataFromValue(value: uidaKey))
     }
     
